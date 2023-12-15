@@ -16,6 +16,9 @@ router.post("/run", async (req, res) => {
     return res.status(400).json({ success: false, error: "Empty code body!" });
   }
 
+  console.log("language isss: ", language);
+
+
   let job;
   try {
     // need to generate a c++ file with content from the request

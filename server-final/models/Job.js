@@ -4,7 +4,7 @@ const JobSchema = new mongoose.Schema({
   language: {
     type: String,
     required: true,
-    enum: ["cpp", "py", "c"],
+    enum: ["cpp", "py", "c", "npa"],
   },
   filepath: {
     type: String,
@@ -29,6 +29,9 @@ const JobSchema = new mongoose.Schema({
     enum: ["in queue", "success", "error"],
   },
   output: {
+    type: String,
+  },
+  parser: {
     type: String,
   },
   verdict: {

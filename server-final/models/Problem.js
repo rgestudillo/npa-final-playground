@@ -19,6 +19,7 @@ const ProblemSchema = new mongoose.Schema(
     timelimit: { type: Number, default: 5.0 },
     statement: { type: String, required: true },
     createdBy: { type: String, required: true },
+    parent: { type: Number },
     testcase: [
       {
         input: { type: String },

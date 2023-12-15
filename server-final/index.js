@@ -14,7 +14,7 @@ require("./config/passport")(passport);
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
     credentials: true,
   })
 );
@@ -51,7 +51,7 @@ app.get(
     failureRedirect: "/failed",
   }),
   (req, res) => {
-    res.redirect("http://localhost:3000/");
+    res.redirect(process.env.CLIENT_ORIGIN);
   }
 );
 

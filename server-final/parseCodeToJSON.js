@@ -48,8 +48,6 @@ function parseCodeToJSON(code) {
       return ctr;
   }
 
-
-
   const delimiterPattern = /(?:;|,|\(|\))/;
   const tokens = code.split(delimiterPattern).filter(token => token.trim() !== '');
 
@@ -359,7 +357,6 @@ function getBounds(str1, str2, str3) {
 
   return p1;
 }
-
 
 // Export the parsing function
 module.exports = { parseCodeToJSON };

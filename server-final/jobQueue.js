@@ -4,14 +4,13 @@ const Job = require("./models/Job");
 const { executeCpp } = require("./executeCpp");
 const { executePy } = require("./executePy");
 const Problem = require("./models/Problem");
-
+const { executeNPA } = require("./executeNPA");
 // For running code with sample user input
 
 
 const jobQueue = new Queue("job-runner-queue", {
   redis: { host: "localhost", port: 6379,  }
 });
-
 
 jobQueue.process(async ({ data }) => {
   console.log("WENT HERE PROCESSING");
@@ -24,18 +23,32 @@ jobQueue.process(async ({ data }) => {
 
   try {
     let output;
+    let output1;
     job["startedAt"] = new Date();
     // we need to run the file and send the response
-    console.log("PROCESSING");
-    if (job.language === "cpp" || job.language === "c")
-      output = await executeCpp(job.filepath, job.userInput);
-    else output = await executePy(job.filepath, job.userInput);
+    console.log("PROCESSING: ", job.language);
 
+    if (job.language === "cpp" || job.language === "c"){
+      output = await executeCpp(job.filepath, job.userInput);
+    }
+    else if(job.language === "npa"){
+      const outputs = await executeNPA(job.filepath, job.userInput);
+      output = outputs[0]; //
+      output1 = outputs[1];
+    }else{
+      output = await executePy(job.filepath, job.userInput);
+    }
+    
     job["completedAt"] = new Date();
     job["status"] = "success";
     job["output"] = output;
-    await job.save();
 
+    if(output1){
+      console.log("WENT HERE PARSER");
+      job["parser"] = output1;
+    }
+
+    await job.save();
     return true;
   } catch (err) {
     job["completedAt"] = new Date();
@@ -88,7 +101,10 @@ submitQueue.process(async ({ data }) => {
         const end = moment(new Date());
         if (job.language === "cpp" || job.language === "c")
           output = executeCpp(job.filepath, item.input);
-        else output = executePy(job.filepath, item.input);
+        else if(job.language === "npa")
+          output = executeNPA(job.filepath, item.input);
+        else
+        output = executePy(job.filepath, item.input);
 
 
         let outputUser = output.trim();
